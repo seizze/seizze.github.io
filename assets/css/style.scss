@@ -2,3 +2,18 @@
 ---
 
 @import "jekyll-theme-minimal";
+@import "SpoqaHanSans-kr";
+@import "SFMono";
+
+body {
+    font-family: 'Spoqa Han Sans';
+    font-weight: 300;
+}
+
+code, pre {
+    font-family: 'SF Mono';
+}
+
+.highlight {
+    font-size: 11px;
+}

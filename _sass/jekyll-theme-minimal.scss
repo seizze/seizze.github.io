@@ -4,9 +4,8 @@
 body {
   background-color: #fff;
   padding:50px;
-  font: 14px/1.5 "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 15px/1.5 "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#727272;
-  font-weight:400;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -28,6 +27,7 @@ h1 {
 
 h2 {
   color:#393939;
+  margin-top: 50px;
 }
 
 h3, h4, h5, h6 {
@@ -35,12 +35,12 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:#267CB9;
+  color:#73A736;
   text-decoration:none;
 }
 
 a:hover, a:focus {
-  color:#069;
+  color:#578426;
   font-weight: bold;
 }
 
@@ -102,6 +102,8 @@ th {
 
 img {
   max-width:100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 header {

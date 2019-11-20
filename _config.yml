@@ -1,6 +1,6 @@
-title: Minimal theme
+title: Breadcrumbs
 logo: /assets/img/logo.png
-description: Minimal is a theme for GitHub Pages.
-show_downloads: true
-google_analytics:
+description: 
+show_downloads: false
+google_analytics: "UA-152957398-1"
 theme: jekyll-theme-minimal
