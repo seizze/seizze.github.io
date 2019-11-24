@@ -50,6 +50,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
+> UIKit이 앱의 런치 사이클에서 app delegate object를 생성하며 앱이 실행되는 동안 이 객체는 계속 존재하기 때문에 위처럼 `AppDelegate` 클래스의 프로퍼티로 윈도우 객체에 대한 레퍼런스를 갖고 있으면 앱이 실행되는 동안 그 레퍼런스가 유지됩니다. 만약 AppDelegate 클래스의 프로퍼티로 선언하지 않고 `application(_:didFinishLaunchingWithOptions)`등 AppDelegate 안의 메서드 안에서 로컬 변수로 선언한다면, 메서드가 끝날 때 UIWindow의 인스턴스에 대한 레퍼런스 카운트가 0이 되어 메모리에서 해제되므로 앱을 실행시켰을 때 화면이 나오지 않게 됩니다. 
+
 앱이 추가 윈도우를 생성한다면, 필요할 때 **lazily** 생성하도록 해야 합니다. 예를 들어 앱이 외부 디스플레이를 지원한다면 디스플레이가 실제로 연결되기를 기다렸다가 연결 된 후에 새 윈도우를 생성해야 합니다.
 
 앱이 foreground로 launch되는지, background로 launch되는지와 상관 없이, 반드시 앱의 launch time에 윈도우를 셍성해야 합니다. 윈도우를 생성하고 설정하는 작업은 큰 작업량이 소모되는 작업이 아닙니다. 앱이 background로 런치 될 경우엔, 윈도우는 생성하되 foreground로 들어가기 전까지 윈도우를 visible하게 만들지 않으면 됩니다.
