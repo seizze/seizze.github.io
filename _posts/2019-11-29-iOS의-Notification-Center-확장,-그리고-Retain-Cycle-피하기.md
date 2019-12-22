@@ -357,11 +357,11 @@ private func registerKeyboardNotifications() {
 
 이 방법을 이용하여, 다른 시스템 notification이 필요해진다면 그에 대한 playlaod 구조체를 만들어 활용할 수 있습니다. 이 때  `NotificationDescriptor`와 `NotificationCenter` extension 코드, `NotificationToken` 등의 코드는 수정하지 않고 재사용할 수 있습니다.
 
-모든 소스 코드는 [이곳][github]에 공개되어 있습니다.
+전체 소스 코드는 [이곳][github]의 DynamicScrollWithNotificationDescriptor 프로젝트에서 확인하실 수 있습니다.
 
 [dynamic-scrollview]: https://seizze.github.io/2019/11/17/iOS에서-키보드에-동적인-스크롤뷰-만들기.html
 [swift-talk]: https://talk.objc.io/episodes/S01E27-typed-notifications-part-1
 [medium]: https://medium.com/@shenghuawu/observe-ios-keyboard-notifications-a49323813656
 [wiki-payload]: https://ko.wikipedia.org/wiki/페이로드_(컴퓨팅)
 [addObserver]: https://developer.apple.com/documentation/foundation/notificationcenter/1411723-addobserver
-[github]: https://github.com/seizze
+[github]: https://github.com/seizze/sample-projects-for-blog
