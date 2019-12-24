@@ -253,7 +253,6 @@ private func registerKeyboardNotifications() {
 먼저 기존 `ViewController`를 좀더 구체화시키기 위해 `TextViewController`로 이름을 변경하겠습니다. 그다음 `RootViewController`를 새로 만들고, 이 `RootViewController`를 네비게이션 컨트롤러에 임베드 한 후, `TextViewController`(기존 `ViewController`)를 그 위에 push하도록 만들었습니다. `RootViewController`의 버튼을 누르면 `TextViewController`가 네비게이션 스택에 push됩니다. `TextViewController`에서 back 버튼을 누르면 `TextViewController`가 네비게이션 스택에서 pop되고, 메모리에서 해제될 것입니다.
 
 <center><img src="{{ "/assets/img/2019-11-29-iOS의-Notification-Center-확장,-그리고-Retain-Cycle-피하기/screens.png" | absolute_url }}" alt="screens"/></center>
-
 `TextViewController`가 메모리에서 해제되는지를 확인하기 위해 deinit 메서드를 작성합니다.
 
 ```swift
@@ -348,7 +347,6 @@ private func registerKeyboardNotifications() {
 그럼 이제 네비게이션 컨트롤러에서 `TextViewController`를 pop할 때, deinit과 `removeObserver`가 호출되는지 확인해 보겠습니다.
 
 <center><img src="{{ "/assets/img/2019-11-29-iOS의-Notification-Center-확장,-그리고-Retain-Cycle-피하기/test-result.png" | absolute_url }}" alt="test-result" style="zoom:48%;"/></center>
-
 `TextViewController`의 deinit과 두 번의 `removeObserver`가 호출되는 것을 확인할 수 있습니다.
 
 ## 마무리
@@ -358,6 +356,14 @@ private func registerKeyboardNotifications() {
 이 방법을 이용하여, 다른 시스템 notification이 필요해진다면 그에 대한 playlaod 구조체를 만들어 활용할 수 있습니다. 이 때  `NotificationDescriptor`와 `NotificationCenter` extension 코드, `NotificationToken` 등의 코드는 수정하지 않고 재사용할 수 있습니다.
 
 전체 소스 코드는 [이곳][github]의 DynamicScrollWithNotificationDescriptor 프로젝트에서 확인하실 수 있습니다.
+
+## References
+
+* [objc Swift Talk #27 — Typed Notifications (Part 1)][swift-talk]
+* [Observe iOS Keyboard Notifications][medium]
+* [위키백과 — 페이로드 (컴퓨팅)][wiki-payload]
+* [developer.apple.com — addObserver(forName:object:queue:using:)][addObserver]
+
 
 [dynamic-scrollview]: https://seizze.github.io/2019/11/17/iOS에서-키보드에-동적인-스크롤뷰-만들기.html
 [swift-talk]: https://talk.objc.io/episodes/S01E27-typed-notifications-part-1
