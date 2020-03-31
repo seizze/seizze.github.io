@@ -4,12 +4,11 @@
 @import "jekyll-theme-minimal";
 @import "customstyles";
 
-@import "SpoqaHanSans-kr";
 @import "SFMono";
 
 body {
-    font-family: 'Spoqa Han Sans';
-    font-weight: 300;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
 }
 
 code, pre {
