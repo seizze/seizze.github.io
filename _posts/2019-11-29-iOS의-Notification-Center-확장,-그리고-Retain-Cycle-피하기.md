@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "iOS의 Notification Center 확장, 그리고 Retain Cycle 피하기"
+title:  "iOS의 Notification Center 확장, 그리고 Memory Leak 피하기"
 date:   2019-11-29 00:18:42 +0900
 tags: iOS swift UIKit
 ---
 
-이전 포스트 [iOS에서 키보드에 동적인 스크롤뷰 만들기][dynamic-scrollview]에서 키보드에 의해 앱의 컨텐츠가 가려지지 않도록 화면을 조절하는 방법에 대해 설명하였습니다. 키보드에 대한 notification을 받기 위해서 Notification Center를 이용했었는데, 이번에는 이 Notification Center에 Extension을 추가하여 이전 내용을 조금 개선해 보도록 하겠습니다.
+이전 포스트 [iOS에서 키보드에 동적인 스크롤뷰 만들기][dynamic-scrollview]에서 키보드에 의해 앱의 컨텐츠가 가려지지 않도록 화면을 조절하는 방법에 대해 설명하였습니다. 키보드에 대한 notification을 받기 위해서 Notification Center를 이용했었는데, 이번에는 이 Notification Center에 Extension을 추가하여 이전 내용을 개선해 보도록 하겠습니다.
 
 이번 포스트의 내용은 [이곳][swift-talk]과 [이곳][medium]을 참조하였으며 좀더 잘 이해하기 위한 내용과 문제를 해결한 내용을 추가하였습니다.
 
@@ -278,7 +278,7 @@ final class NotificationToken {
 
 하지만 현재는 코드에 문제가 있기 때문에 호출되지 않습니다.
 
-## Retain Cycle 피하기
+## Memory Leak 피하기
 
 `addObserver`를 호출하는 부분을 잘 들여다 보면, 클로저 안에 `self` 키워드가 존재합니다.
 
@@ -300,7 +300,11 @@ let showToken = center.addObserver(with: UIViewController.keyboardWillShow) { (p
 }
 ```
 
-클로저는 `self` 키워드를 통해 `ViewController`의 레퍼런스를 캡쳐하고, 클로저를 포함하고 있는 클래스인 `ViewController`의 인스턴스에서는 클로저를 참조합니다. 이렇게 될 경우 `ViewController`가 pop 되어도 클로저와 `ViewController` 인스턴스가 서로를 참조하고 있게 됩니다. 참조의 기본은 강한 참조이므로 둘 모두 레퍼런스 카운트가 1인 채로 남아있게 되고, Retain cycle이 발생하여 모두 메모리에서 해제가 되지 않습니다. `ViewController`가 메모리에서 해제되지 않으면, `notificationTokens`도 해제 되지 않습니다. 당연히 `removeObserver`도 호출되지 않습니다.
+위 코드에서 `NotificationCenter`는 등록된 클로저를 참조하고 있다가 노티피케이션이 오면 실행시켜주는 싱글톤 객체입니다. 클로저를 등록할 때 self 키워드로 View Controller 인스턴스를 참조한다면, `NotificationCenter` 측에서는 등록된 클로저를 참조하고, 클로저는 View Controller 인스턴스를 참조하는 관계가 됩니다.
+
+이 때 `NotificationCenter`는 싱글톤이라서 메모리에서 해제되지 않기 때문에, `NotificationCenter`에 등록된 클로저가 캡쳐한 View Controller 인스턴스 또한 네비게이션 컨트롤러에서 pop 되어도 레퍼런스 카운트가 0이 되지 않아서 메모리에서 해제되지 않게 됩니다. 이 때문에 메모리 릭이 발생합니다.
+
+`ViewController` 인스턴스가 메모리에서 해제되지 않으면, `notificationTokens`도 해제 되지 않습니다. 당연히 `removeObserver`도 호출되지 않습니다.
 
 참조는 가능하지만 레퍼런스 카운트가 증가하지 않는 `weak` 레퍼런스를 이용해서 이를 해결해야 합니다.
 
@@ -340,13 +344,14 @@ private func registerKeyboardNotifications() {
 }
 ```
 
-클로저에서는 `weak self`를 캡쳐합니다. `weak` 레퍼런스를 이용하면 레퍼런스 카운트가 증가하지 않기 때문에 `ViewController` 인스턴스가 메모리에서 해제될 수 있게 됩니다. 이제 Retain cycle 문제가 해결되었습니다.
+클로저에서는 `self`를 `weak`로 캡쳐합니다. `weak` 레퍼런스를 이용하면 레퍼런스 카운트가 증가하지 않기 때문에 `ViewController` 인스턴스가 메모리에서 해제될 수 있게 됩니다.
 
 `weak` 레퍼런스의 경우 클로저가 실제 동작할 시점에 참조하고 있는 객체가 이미 메모리에서 해제되었을 수 있기 때문에 `nil`일 수도 있습니다. 옵셔널 바인딩을 이용해 언래핑 후 기존 기능을 수행합니다.
 
 그럼 이제 네비게이션 컨트롤러에서 `TextViewController`를 pop할 때, deinit과 `removeObserver`가 호출되는지 확인해 보겠습니다.
 
 <center><img src="{{ "/assets/img/2019-11-29-iOS의-Notification-Center-확장,-그리고-Retain-Cycle-피하기/test-result.png" | absolute_url }}" alt="test-result" style="zoom:48%;"/></center>
+
 `TextViewController`의 deinit과 두 번의 `removeObserver`가 호출되는 것을 확인할 수 있습니다.
 
 ## 마무리
